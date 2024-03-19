@@ -1,0 +1,61 @@
+import { trigger, transition, style, animate } from '@angular/animations';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-fullscreen',
+  standalone: true,
+  imports: [],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('0.2s ease-out', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [animate('0.2s ease-in', style({ opacity: 0 }))]),
+    ]),
+  ],
+
+  template: `
+    <section
+      @fadeInOut
+      class="h-full w-full min-h-96 fixed inset-0 grid place-content-center z-20 px-2 backdrop-blur-sm bg-zinc-900/40"
+    >
+      <img
+        [src]="image"
+        alt="image"
+        srcset=""
+        class="aspect-auto md:max-h-[30rem] md:max-w-4xl "
+      />
+
+      <button
+        class="absolute top-2 right-2 bg-white p-2 rounded-lg"
+        (click)="onCloseFullscreen()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-5 fill-current text-gray-800"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </section>
+  `,
+})
+export class FullscreenComponent {
+  @Input() image: string = '';
+
+  @Output() close: EventEmitter<boolean> = new EventEmitter<boolean>(false);
+
+  onCloseFullscreen() {
+    this.close.emit(true);
+  }
+}
