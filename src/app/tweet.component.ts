@@ -1,22 +1,41 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
-import { FullscreenComponent } from './fullscreen.component';
-
-type tweet = {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  date: Date;
-};
+import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { FullscreenComponent } from './components/fullscreen.component';
+import { RouterLink } from '@angular/router';
+import { tweet } from '@model';
+import { DbService } from './service/db.service';
+import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
 
 @Component({
   selector: 'app-tweet',
   standalone: true,
-  imports: [DatePipe, NgClass, FullscreenComponent],
+  imports: [
+    DatePipe,
+    NgClass,
+    FullscreenComponent,
+    RouterLink,
+    FirebaseTimestampPipe,
+  ],
   template: `
-    <div class="h-20 flex items-center">
-      <h1 class="text-[#f0f7ee]">Our Timeline</h1>
+    <div class="h-20 flex items-center justify-between">
+      <h1 class="text-[#f0f7ee] p-0 m-0">Our Timeline</h1>
+      <a routerLink="/add" class="rounded-md bg-zinc-900 p-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-plus"
+        >
+          <path d="M5 12h14" />
+          <path d="M12 5v14" />
+        </svg>
+      </a>
     </div>
 
     @for (item of tweet; track $index) {
@@ -59,7 +78,7 @@ type tweet = {
           <div class="aspect-video max-w-xl bg-zinc-800 rounded-md">
             <img
               class="object-cover"
-              (click)="onFullScreenClick(item.id, item.image)"
+              (click)="onFullScreenClick(item.id!, item.image)"
               [src]="item.image"
               [alt]="item.title"
             />
@@ -104,18 +123,17 @@ type tweet = {
     }
 
     <!-- Fullscreen -->
-    @if (selectedImageId > 0) {
+    @if (selectedImageId !== '') {
     <app-fullscreen
       [image]="selectedImage"
-      (close)="selectedImageId = 0"
+      (close)="selectedImageId = ''"
     ></app-fullscreen>
     }
   `,
 })
-export class TweetComponent {
+export class TweetComponent implements OnInit {
   tweet: tweet[] = [
     {
-      id: 1,
       title: 'Boomer day went to the park',
       description: 'Finally! You can check it out here.',
       image:
@@ -123,7 +141,6 @@ export class TweetComponent {
       date: new Date(),
     },
     {
-      id: 2,
       title: 'Went to the juhu beach',
       description: 'Had a great time with my love. You can check it out here.',
       image:
@@ -134,12 +151,22 @@ export class TweetComponent {
 
   // on image click make it full
 
-  selectedImageId: number = 0;
-  selectedImage: string = '';
+  selectedImageId: string = '';
+  selectedImage: string | ArrayBuffer = '';
 
-  onFullScreenClick(id: number, image: string) {
+  // injections
+
+  private db = inject(DbService);
+
+  ngOnInit(): void {
+    this.db.getProject().subscribe((data) => {
+      this.tweet = data;
+    });
+  }
+
+  onFullScreenClick(id: string, image: string | ArrayBuffer) {
     if (this.selectedImageId === id) {
-      this.selectedImageId = 0;
+      this.selectedImageId = '';
     } else {
       this.selectedImageId = id;
       this.selectedImage = image;
@@ -148,6 +175,6 @@ export class TweetComponent {
 
   @HostListener('document:keydown.escape', ['$event'])
   onEscapeKeydownHandler(event: KeyboardEvent) {
-    this.selectedImageId = 0;
+    this.selectedImageId = '';
   }
 }

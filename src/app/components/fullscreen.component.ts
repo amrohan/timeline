@@ -51,7 +51,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   `,
 })
 export class FullscreenComponent {
-  @Input() image: string = '';
+  @Input() image: string | ArrayBuffer = '';
 
   @Output() close: EventEmitter<boolean> = new EventEmitter<boolean>(false);
 
