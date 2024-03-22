@@ -189,7 +189,6 @@ export class AddComponent {
 
   onAdd() {
     // TODO
-
     const storageRef = ref(this.storage, this.fileData.name);
     uploadBytesResumable(storageRef, this.fileData).then((res) => {
       console.log('🚀 ~ AddComponent ~ getDownloadURL ~ i:', res);

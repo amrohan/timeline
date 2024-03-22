@@ -14,6 +14,7 @@ import {
   startAt,
   endAt,
   endBefore,
+  getDoc,
 } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytesResumable } from '@angular/fire/storage';
 
@@ -61,11 +62,20 @@ export class DbService {
       idField: 'id',
     }) as Observable<tweet[]>;
   }
+
   addTimeLine(data: tweet): Observable<tweet> {
     const promise = addDoc(this.dbCollection, data).then((docRef) => {
       console.log('Document written with ID: ', docRef.id);
     });
     return from(promise).pipe(map(() => data)) as Observable<tweet>;
+  }
+
+  getTimeLineById(id: string): Observable<tweet> {
+    const docRef = doc(this.dbCollection, id);
+    const promise = getDoc(docRef);
+    return from(promise).pipe(
+      map((doc) => doc.data() as tweet)
+    ) as Observable<tweet>;
   }
 
   updateTimeline(id: string, data: tweet): Observable<tweet> {

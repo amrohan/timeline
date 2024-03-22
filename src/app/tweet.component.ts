@@ -43,7 +43,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
     <!-- Timeline -->
     <div class="mx-none md:mx-auto max-w-4xl">
       <!-- Heading -->
-      <div class="ps-2 my-2 first:mt-0">
+      <div class="ps-2 my-2 first:mt-0 flex justify-between items-center">
         <h3
           class="text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
         >
@@ -67,6 +67,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
         <!-- Right Content -->
         <div class="grow pt-0.5 pb-8">
           <h3
+            routerLink="/edit/{{ item.id }}"
             class="flex gap-x-1.5 font-semibold text-gray-800 dark:text-white"
           >
             {{ item.title }}
