@@ -24,9 +24,9 @@ import {
   >
     <main class="h-full w-full flex justify-center items-center py-4 px-2">
       <div
-        class="bg-black !text-slate-100 max-w-4xl  w-full h-full p-4 rounded-md border border-zinc-800"
+        class="bg-black !text-slate-100 max-w-4xl w-full h-full p-4 rounded-md border border-zinc-800"
       >
-        <div class="flex justify-between items-center gap-2 h-16">
+        <div class="flex justify-between items-center gap-2 h-10">
           <h1 class="text-2xl font-semibold ">Update Timeline</h1>
           <a routerLink="/" class="rounded-lg bg-zinc-900 p-2">
             <svg
@@ -146,12 +146,18 @@ import {
         </div>
 
         <!-- Add btn -->
-        <div class="flex justify-center mt-4">
+        <div class="flex justify-between items-center gap-2 mt-4">
           <button
             class="rounded-md  p-2 w-full bg-white text-black"
             (click)="onUpdate()"
           >
             Update
+          </button>
+          <button
+            class="rounded-md  p-2 w-full bg-red-500 text-white"
+            (click)="onDelete()"
+          >
+            Delete
           </button>
         </div>
       </div>
@@ -169,6 +175,7 @@ export class EditComponent implements OnInit {
 
   fileData: File;
 
+  oldImage: string | ArrayBuffer = '';
   imageSrc: string | ArrayBuffer = '';
   showFullscreen = false;
 
@@ -182,6 +189,7 @@ export class EditComponent implements OnInit {
       next: (res) => {
         this.timeline = res;
         this.imageSrc = res.image;
+        this.oldImage = res.image;
         // convert firebase time stamp to date
         if (res.date instanceof Timestamp) {
           this.selectedDate = formatDate(
@@ -202,6 +210,13 @@ export class EditComponent implements OnInit {
   onUpdate() {
     // TODO
     if (this.fileData) {
+      const regex = /.*\/([^?]+)\?.*/;
+      // delete existing image if new is uploaded
+      if (typeof this.oldImage === 'string' && this.oldImage !== '') {
+        const img = this.oldImage.replace(regex, '$1');
+        this.removeFileFromStorage(img);
+      }
+
       const storageRef = ref(this.storage, this.fileData.name);
       uploadBytesResumable(storageRef, this.fileData).then(() => {
         getDownloadURL(storageRef).then((i) => {
@@ -239,6 +254,23 @@ export class EditComponent implements OnInit {
       });
   }
 
+  onDelete() {
+    if (typeof this.timeline.image === 'string') {
+      const regex = /.*\/([^?]+)\?.*/;
+      const img = this.timeline.image.replace(regex, '$1');
+      this.removeFileFromStorage(img);
+    }
+
+    this.db.deleteTimeline(this.route.snapshot.params['id']).subscribe({
+      next: (res) => {
+        console.log('🚀 ~ EditComponent ~ this.db.deleteTimeline ~ res:', res);
+      },
+      error: (err) => {
+        console.log('🚀 ~ EditComponent ~ this.db.deleteTimeline ~ err:', err);
+      },
+    });
+  }
+
   onFileChange(event: any) {
     const file = event.target.files[0];
     this.fileData = file;
@@ -256,8 +288,8 @@ export class EditComponent implements OnInit {
 
     if (typeof this.timeline.image === 'string') {
       // Use the first capturing group to replace the entire match with the filename
-      this.timeline.image = this.timeline.image.replace(regex, '$1');
-      this.removeFileFromStorage(this.timeline.image);
+      const img = this.timeline.image.replace(regex, '$1');
+      this.removeFileFromStorage(img);
     }
 
     this.timeline.image = '';
@@ -268,6 +300,7 @@ export class EditComponent implements OnInit {
     const storageRef = ref(this.storage, fileName);
     deleteObject(storageRef).then(() => {
       console.log('🚀 ~ EditComponent ~ removeFileFromStorage ~ Deleted');
+      this.oldImage = '';
     });
   }
 }
