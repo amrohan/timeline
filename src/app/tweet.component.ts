@@ -38,7 +38,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
       </a>
     </div>
 
-    @for (item of tweet; track $index) {
+    @for (item of db.tweet(); track $index) {
 
     <!-- Timeline -->
     <div class="mx-none md:mx-auto max-w-4xl">
@@ -47,7 +47,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
         <h3
           class="text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
         >
-          {{ item.date | date : 'dd MMMM yyyy' }}
+          {{ item.date | firebaseTimestamp | date }}
         </h3>
       </div>
       <!-- End Heading -->
@@ -89,11 +89,12 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
       <!-- End Item -->
 
       <!-- Item -->
-      @if (tweet.length-1 ==$index) {
+      @if (db.tweet().length-1 ==$index) {
 
       <div class="ps-[7px] flex gap-x-3">
         <button
           type="button"
+          (click)="LoadMore()"
           class="hs-collapse-toggle hs-collapse-open:hidden text-start inline-flex items-center gap-x-1 text-sm text-blue-600 font-medium decoration-2 hover:underline dark:text-blue-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
           id="hs-timeline-collapse-content"
           data-hs-collapse="#hs-timeline-collapse"
@@ -132,22 +133,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
   `,
 })
 export class TweetComponent implements OnInit {
-  tweet: tweet[] = [
-    {
-      title: 'Boomer day went to the park',
-      description: 'Finally! You can check it out here.',
-      image:
-        'https://images.unsplash.com/photo-1710814778753-245115460aa6?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      date: new Date(),
-    },
-    {
-      title: 'Went to the juhu beach',
-      description: 'Had a great time with my love. You can check it out here.',
-      image:
-        'https://images.unsplash.com/photo-1682695794816-7b9da18ed470?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      date: new Date(),
-    },
-  ];
+  public db = inject(DbService);
 
   // on image click make it full
 
@@ -156,11 +142,22 @@ export class TweetComponent implements OnInit {
 
   // injections
 
-  private db = inject(DbService);
-
   ngOnInit(): void {
-    this.db.getProject().subscribe((data) => {
-      this.tweet = data;
+    this.db.getTimeline(1).subscribe((data) => {
+      this.db.tweet.set(data);
+    });
+  }
+
+  LoadMore() {
+    const lastTweet: tweet = this.db.tweet()[this.db.tweet().length - 1];
+
+    this.db.loadMore(lastTweet).subscribe({
+      next: (res) => {
+        this.db.tweet.set([...this.db.tweet(), ...res]);
+      },
+      error: (err) => {
+        console.log('🚀 ~ TweetComponent ~ this.db.loadMore ~ err:', err);
+      },
     });
   }
 

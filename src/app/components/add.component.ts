@@ -1,8 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FullscreenComponent } from './fullscreen.component';
 import { tweet } from '@model';
+
+import {
+  Storage,
+  ref,
+  uploadBytesResumable,
+  getMetadata,
+  getDownloadURL,
+} from '@angular/fire/storage';
+import { DbService } from '../service/db.service';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-add',
@@ -65,7 +75,7 @@ import { tweet } from '@model';
               type="date"
               id="date"
               class="w-full rounded-md bg-zinc-900 p-2"
-              [(ngModel)]="timeline.date"
+              [(ngModel)]="selectedDate"
             />
           </div>
           <div class="flex flex-col items-center justify-center w-full mt-3">
@@ -161,24 +171,62 @@ import { tweet } from '@model';
   `,
 })
 export class AddComponent {
+  selectedDate: string;
   timeline: tweet = {
-    id: '',
     title: '',
     description: '',
     date: new Date(),
     image: '',
   };
 
+  fileData: File;
+
   imageSrc: string | ArrayBuffer = '';
   showFullscreen = false;
 
+  private readonly storage: Storage = inject(Storage);
+  private readonly dbService = inject(DbService);
+
   onAdd() {
     // TODO
-    console.log('🚀 ~ AddComponent ~ onAdd ~ this.timeline:', this.timeline);
+
+    const storageRef = ref(this.storage, this.fileData.name);
+    uploadBytesResumable(storageRef, this.fileData).then((res) => {
+      console.log('🚀 ~ AddComponent ~ getDownloadURL ~ i:', res);
+      getDownloadURL(storageRef).then((i) => {
+        this.timeline.image = i;
+
+        // converting date to firebase timestamp
+        const jsDate = new Date(this.selectedDate);
+        const firebaseTimestamp: Timestamp = Timestamp.fromDate(jsDate);
+        this.timeline.date = firebaseTimestamp;
+
+        console.log(
+          '🚀 ~ AddComponent ~ onAdd ~ this.timeline:',
+          this.timeline
+        );
+        this.dbService.addTimeLine(this.timeline).subscribe({
+          next: (res) => {
+            console.log(
+              '🚀 ~ AddComponent ~ this.dbService.addTimeLine ~ res:',
+              res
+            );
+          },
+          error: (err) => {
+            console.log(
+              '🚀 ~ AddComponent ~ this.dbService.addTimeLine ~ err:',
+              err
+            );
+            return {};
+          },
+        });
+      });
+    });
   }
 
   onFileChange(event: any) {
     const file = event.target.files[0];
+    this.fileData = file;
     const reader = new FileReader();
 
     reader.onload = (e: any) => {
