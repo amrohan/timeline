@@ -8,7 +8,7 @@ import { AuthService } from '@service';
   standalone: true,
   imports: [],
   template: `
-    <div class="h-svh w-full bg-zinc-950 z-20 relative overflow-hidden">
+    <div class="h-svh w-ful z-20 relative overflow-hidden">
       <div class="flex flex-col items-center justify-center h-full z-30">
         <h1 class="mb-0">Account Login</h1>
         <p class="mb-2 mt-1 text-center">Welcome to the TimeLine</p>
