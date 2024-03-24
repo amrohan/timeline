@@ -8,9 +8,10 @@ import { AuthService } from '@service';
   standalone: true,
   imports: [],
   template: `
-    <div class="absolute inset-0 bg-zinc-950 z-20">
-      <div class="flex flex-col items-center justify-center h-full">
-        <h1 class="text-4xl font-bold text-white">Login</h1>
+    <div class="h-svh w-full bg-zinc-950 z-20 relative overflow-hidden">
+      <div class="flex flex-col items-center justify-center h-full z-30">
+        <h1 class="mb-0">Account Login</h1>
+        <p class="mb-2 mt-1 text-center">Welcome to the TimeLine</p>
         <button
           class="bg-white text-black px-4 py-2 mt-4 rounded-md flex justify-center items-center gap-2"
           (click)="signInWithProvider()"
@@ -47,7 +48,8 @@ import { AuthService } from '@service';
       </div>
     </div>
   `,
-  styles: ``,
+  styles: `
+  `,
 })
 export class LoginComponent implements OnInit {
   auth = inject(AuthService);
@@ -60,6 +62,7 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
   signInWithProvider() {
     this.auth.signInWithProvider();
   }
