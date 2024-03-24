@@ -32,11 +32,9 @@ import { NgStyle, NgClass } from '@angular/common';
     <section
       class="h-full z-full z-10 fixed inset-0 backdrop-blur-sm bg-zinc-900/40"
     >
-      <main
-        class="h-fit w-full flex justify-center items-center py-4 px-2 overflow-auto"
-      >
+      <main class="h-full w-full flex justify-center items-center py-4 px-2 ">
         <div
-          class="bg-black !text-slate-100 max-w-4xl w-full h-full p-4 rounded-md border border-zinc-800"
+          class="bg-black !text-slate-100 max-w-4xl w-full h-fit p-4 rounded-md border border-zinc-800"
         >
           <div class="flex justify-between items-center gap-2 h-16">
             <h1 class="text-2xl font-semibold">Timeline</h1>

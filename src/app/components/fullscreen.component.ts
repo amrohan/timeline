@@ -1,5 +1,11 @@
 import { trigger, transition, style, animate } from '@angular/animations';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+} from '@angular/core';
 
 @Component({
   selector: 'app-fullscreen',
@@ -52,8 +58,20 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class FullscreenComponent {
   @Input() image: string | ArrayBuffer = '';
+  @Input() state: boolean = false;
 
   @Output() close: EventEmitter<boolean> = new EventEmitter<boolean>(false);
+
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKeydownHandler(event: KeyboardEvent) {
+    if (this.shouldHandleEscapeKey()) {
+      this.onCloseFullscreen();
+      event.stopImmediatePropagation(); // Prevents the event from reaching the parent component
+    }
+  }
+  shouldHandleEscapeKey(): boolean {
+    return this.state;
+  }
 
   onCloseFullscreen() {
     this.close.emit(true);
