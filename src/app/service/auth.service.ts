@@ -15,7 +15,15 @@ export class AuthService {
   provider = new GoogleAuthProvider();
 
   signInWithProvider() {
-    signInWithRedirect(this.auth, this.provider);
+    signInWithRedirect(this.auth, this.provider)
+      .then((u) => {
+        console.log(u);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  getUsrProfileInfo() {
+    return this.auth.currentUser;
   }
 
   signOut() {

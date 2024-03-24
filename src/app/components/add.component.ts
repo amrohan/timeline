@@ -1,10 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FullscreenComponent } from './fullscreen.component';
@@ -14,7 +8,6 @@ import {
   Storage,
   ref,
   uploadBytesResumable,
-  getMetadata,
   getDownloadURL,
   deleteObject,
   UploadTask,
@@ -23,6 +16,7 @@ import {
 } from '@angular/fire/storage';
 import { DbService } from '../service/db.service';
 import { NgStyle, NgClass } from '@angular/common';
+import { AuthService } from '../service/auth.service';
 
 @Component({
   selector: 'app-add',
@@ -233,6 +227,7 @@ export class AddComponent {
 
   private readonly storage: Storage = inject(Storage);
   private readonly dbService = inject(DbService);
+  private readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   onAdd() {

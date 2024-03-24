@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { tweet } from '@model';
 import { DbService } from './service/db.service';
 import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
+import { AuthService } from './service/auth.service';
 
 @Component({
   selector: 'app-tweet',
@@ -19,23 +20,44 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
   template: `
     <div class="h-20 flex items-center justify-between">
       <h1 class="text-[#f0f7ee] p-0 m-0">Timeline</h1>
-      <a routerLink="/add" class="rounded-md bg-zinc-900 p-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="lucide lucide-plus"
-        >
-          <path d="M5 12h14" />
-          <path d="M12 5v14" />
-        </svg>
-      </a>
+
+      <div class="flex justify-end items-center gap-2">
+        <a routerLink="/add" class="rounded-md bg-zinc-900 p-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="size-5"
+          >
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+          </svg>
+        </a>
+        <button class="rounded-md bg-zinc-900 p-2" (click)="signOutDialouge()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="size-5"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" x2="9" y1="12" y2="12" />
+          </svg>
+        </button>
+      </div>
     </div>
 
     @for (item of db.tweet(); track $index) {
@@ -72,7 +94,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
           >
             {{ item.title }}
           </h3>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
             {{ item.description }}
           </p>
           <!-- Image -->
@@ -83,6 +105,10 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
               [src]="item.image"
               [alt]="item.title"
             />
+          </div>
+          <!-- User info -->
+          <div>
+            <p class="text-xs text-gray-500">Rohan Salunkhe</p>
           </div>
         </div>
         <!-- End Right Content -->
@@ -135,6 +161,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
 })
 export class TimelineComponent implements OnInit {
   public db = inject(DbService);
+  auth = inject(AuthService);
 
   // on image click make it full
 
@@ -166,6 +193,15 @@ export class TimelineComponent implements OnInit {
     } else {
       this.selectedImageId = id;
       this.selectedImage = image;
+    }
+  }
+
+  signOutDialouge() {
+    let text = 'Are you sure you want to logout?';
+    if (confirm(text) == true) {
+      this.auth.signOut();
+    } else {
+      text = 'You canceled!';
     }
   }
 
