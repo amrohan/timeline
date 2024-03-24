@@ -24,8 +24,12 @@
     "lib": ["ES2022", "dom"],
     "paths": {
       "@model": ["src/app/model"],
-      "@store": ["src/app/core/store/auth"],
-      "@service": ["src/app/service"]
+      "@component": ["src/app/components"],
+      "@service": ["src/app/service"],
+      "@animation": ["src/app/animation"],
+      "@helpers": ["src/app/helpers"],
+      "@guard": ["src/app/guard"],
+      "@pipe": ["src/app/pipe"]
     }
   },
   "angularCompilerOptions": {

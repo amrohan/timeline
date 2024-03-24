@@ -3,6 +3,12 @@ import { authGuard } from './guard/auth.guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./timeline.component').then((m) => m.TimelineComponent),
+  },
+  {
     path: 'add',
     canActivate: [authGuard],
     loadComponent: () =>

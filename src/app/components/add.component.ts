@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { FullscreenComponent } from './fullscreen.component';
 import { tweet } from '@model';
 
 import {
@@ -14,26 +13,30 @@ import {
   StorageReference,
   UploadTaskSnapshot,
 } from '@angular/fire/storage';
-import { DbService } from '../service/db.service';
 import { NgStyle, NgClass } from '@angular/common';
 // import { AuthService } from '../service/auth.service';
 import { ToastrService } from 'ngx-toastr';
-import { generateUniqueFilename } from '../helpers/generateFilename';
+import { generateUniqueFilename } from '@helpers';
+import { DbService } from '@service';
+import { FullscreenComponent } from './fullscreen.component';
+import { fadeInOut } from '@animation';
 
 @Component({
   selector: 'app-add',
   standalone: true,
   imports: [RouterLink, FormsModule, FullscreenComponent, NgStyle, NgClass],
+  animations: [fadeInOut],
   template: `
     <section
+      @fadeInOut
       class="h-full z-full z-10 fixed inset-0 backdrop-blur-sm bg-zinc-900/40"
     >
       <main class="h-full w-full flex justify-center items-center py-4 px-2 ">
         <div
-          class="bg-black !text-slate-100 max-w-4xl w-full h-fit p-4 rounded-md border border-zinc-800"
+          class="bg-black !text-slate-100 max-w-4xl w-full h-fit p-4 rounded-md border border-zinc-800 animate-fade-up animate-ease-in-out"
         >
           <div class="flex justify-between items-center gap-2 h-16">
-            <h1 class="text-2xl font-semibold">Timeline</h1>
+            <h1 class="text-2xl font-semibold">Add Timeline</h1>
             <a routerLink="/" class="rounded-lg bg-zinc-900 p-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

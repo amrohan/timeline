@@ -1,4 +1,3 @@
-import { trigger, transition, style, animate } from '@angular/animations';
 import {
   Component,
   EventEmitter,
@@ -6,20 +5,13 @@ import {
   Input,
   Output,
 } from '@angular/core';
+import { fadeInOut } from '@animation';
 
 @Component({
   selector: 'app-fullscreen',
   standalone: true,
   imports: [],
-  animations: [
-    trigger('fadeInOut', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('0.2s ease-out', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [animate('0.2s ease-in', style({ opacity: 0 }))]),
-    ]),
-  ],
+  animations: [fadeInOut],
 
   template: `
     <section

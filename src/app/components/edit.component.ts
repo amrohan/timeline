@@ -9,7 +9,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { tweet } from '@model';
-import { DbService } from '../service/db.service';
 
 import { NgStyle, formatDate } from '@angular/common';
 import { Timestamp } from '@angular/fire/firestore';
@@ -17,28 +16,29 @@ import {
   Storage,
   ref,
   uploadBytesResumable,
-  getMetadata,
   getDownloadURL,
   deleteObject,
   StorageReference,
   UploadTask,
   UploadTaskSnapshot,
 } from '@angular/fire/storage';
-import { FullscreenComponent } from './fullscreen.component';
-import { generateUniqueFilename } from '../helpers/generateFilename';
 import { ToastrService } from 'ngx-toastr';
+import { DbService } from '@service';
+import { generateUniqueFilename } from '@helpers';
+import { FullscreenComponent } from './fullscreen.component';
 
 @Component({
   selector: 'app-edit',
   standalone: true,
   imports: [FormsModule, RouterLink, NgStyle, FullscreenComponent],
+
   template: `
     <section
       class="h-full z-full z-10 fixed inset-0 backdrop-blur-sm bg-zinc-900/40"
     >
       <main class="h-full w-full flex justify-center items-center py-4 px-2">
         <div
-          class="bg-black !text-slate-100 max-w-4xl w-full h-fit p-4 rounded-md border border-zinc-800"
+          class="bg-black !text-slate-100 max-w-4xl w-full h-fit p-4 rounded-md border border-zinc-800 animate-fade-up animate-ease-in-out"
         >
           <div class="flex justify-between items-center gap-2 h-10">
             <h1 class="text-2xl font-semibold ">Update Timeline</h1>

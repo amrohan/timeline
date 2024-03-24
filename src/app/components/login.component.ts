@@ -8,11 +8,11 @@ import { AuthService } from '@service';
   standalone: true,
   imports: [],
   template: `
-    <div class="absolute inset-0 dark:bg-zinc-900 dark:text-white z-20">
+    <div class="absolute inset-0 bg-zinc-950 z-20">
       <div class="flex flex-col items-center justify-center h-full">
-        <h1 class="text-4xl font-bold">Login</h1>
+        <h1 class="text-4xl font-bold text-white">Login</h1>
         <button
-          class="dark:bg-white dark:text-black px-4 py-2 mt-4 rounded-md flex justify-center items-center gap-2"
+          class="bg-white text-black px-4 py-2 mt-4 rounded-md flex justify-center items-center gap-2"
           (click)="signInWithProvider()"
         >
           <svg
@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.auth.authState$.subscribe((aUser) => {
       if (aUser) {
-        this.router.navigate(['/']);
+        this.router.navigateByUrl('/');
       }
     });
   }
@@ -65,5 +65,6 @@ export class LoginComponent implements OnInit {
   }
   signOut() {
     this.auth.signOut();
+    this.router.navigateByUrl('/login');
   }
 }
