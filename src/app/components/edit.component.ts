@@ -1,10 +1,16 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { tweet } from '@model';
 import { DbService } from '../service/db.service';
 
-import { formatDate } from '@angular/common';
+import { NgStyle, formatDate } from '@angular/common';
 import { Timestamp } from '@angular/fire/firestore';
 import {
   Storage,
@@ -13,18 +19,21 @@ import {
   getMetadata,
   getDownloadURL,
   deleteObject,
+  StorageReference,
+  UploadTask,
+  UploadTaskSnapshot,
 } from '@angular/fire/storage';
 
 @Component({
   selector: 'app-edit',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, NgStyle],
   template: ` <section
     class="h-full z-full z-10 fixed inset-0 backdrop-blur-sm bg-zinc-900/40"
   >
     <main class="h-full w-full flex justify-center items-center py-4 px-2">
       <div
-        class="bg-black !text-slate-100 max-w-4xl w-full h-full p-4 rounded-md border border-zinc-800"
+        class="bg-black !text-slate-100 max-w-4xl w-full h-fit p-4 rounded-md border border-zinc-800"
       >
         <div class="flex justify-between items-center gap-2 h-10">
           <h1 class="text-2xl font-semibold ">Update Timeline</h1>
@@ -77,6 +86,7 @@ import {
           />
         </div>
         <div class="flex flex-col items-center justify-center w-full mt-3">
+          @if (!imageSrc &&!oldImage) {
           <label
             for="dropzone-file"
             class="flex flex-col items-center justify-center w-full h-fit  rounded-lg cursor-pointer bg-zinc-900"
@@ -114,7 +124,7 @@ import {
               accept="image/*"
             />
           </label>
-          @if (imageSrc) {
+          } @if (imageSrc) {
           <div
             class="size-28 flex justify-between items-center mt-2 rounded-md relative overflow-hidden bg-zinc-900"
           >
@@ -122,7 +132,7 @@ import {
               (click)="showFullscreen = true"
               [src]="imageSrc"
               alt="image"
-              class="rounded-md cover"
+              class="rounded-md object-cover object-fit w-full h-full"
             />
             <button (click)="removeFile()">
               <svg
@@ -141,8 +151,41 @@ import {
                 <path d="M8 12h8" />
               </svg>
             </button>
+            @if(progress() !== 100 ) {
+            <div
+              role="status"
+              class="absolute grid place-content-center bg-black/60 h-full w-full"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-white"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="currentFill"
+                />
+              </svg>
+              <span class="sr-only">Loading...</span>
+            </div>
+            }
           </div>
-          }
+          @if(progress() !== 100 ) {
+          <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2">
+            <div
+              class="bg-gray-300 text-xs font-medium text-black text-center p-0.5 leading-none rounded-full"
+              [ngStyle]="{ width: progress() + '%' }"
+            >
+              @if(progress() ===100) { Uploaded }@else { {{ progress() }}% }
+            </div>
+          </div>
+          } }
         </div>
 
         <!-- Add btn -->
@@ -174,6 +217,7 @@ export class EditComponent implements OnInit {
   };
 
   fileData: File;
+  progress = signal(100);
 
   oldImage: string | ArrayBuffer = '';
   imageSrc: string | ArrayBuffer = '';
@@ -181,6 +225,7 @@ export class EditComponent implements OnInit {
 
   private readonly db = inject(DbService);
   private readonly storage: Storage = inject(Storage);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private readonly route = inject(ActivatedRoute);
 
@@ -208,29 +253,10 @@ export class EditComponent implements OnInit {
   }
 
   onUpdate() {
-    // TODO
-    if (this.fileData) {
-      const regex = /.*\/([^?]+)\?.*/;
-      // delete existing image if new is uploaded
-      if (typeof this.oldImage === 'string' && this.oldImage !== '') {
-        const img = this.oldImage.replace(regex, '$1');
-        this.removeFileFromStorage(img);
-      }
-
-      const storageRef = ref(this.storage, this.fileData.name);
-      uploadBytesResumable(storageRef, this.fileData).then(() => {
-        getDownloadURL(storageRef).then((i) => {
-          this.timeline.image = i;
-          this.updateTimeline();
-        });
-      });
-    } else {
-      this.updateTimeline();
-    }
+    this.updateTimeline();
   }
 
   updateTimeline() {
-    // converting date to firebase timestamp
     const jsDate = new Date(this.selectedDate);
     const firebaseTimestamp: Timestamp = Timestamp.fromDate(jsDate);
     this.timeline.date = firebaseTimestamp;
@@ -252,6 +278,47 @@ export class EditComponent implements OnInit {
           return {};
         },
       });
+  }
+
+  uploadFile() {
+    const storageRef = this.getStorageRef(this.fileData.name);
+    const uploadTask = this.createUploadTask(storageRef, this.fileData);
+
+    this.handleUploadState(uploadTask);
+  }
+
+  getStorageRef(fileName: string) {
+    return ref(this.storage, fileName);
+  }
+
+  createUploadTask(storageRef: StorageReference, fileData: File) {
+    return uploadBytesResumable(storageRef, fileData);
+  }
+
+  handleUploadState(uploadTask: UploadTask) {
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        this.handleSnapshot(snapshot);
+      },
+      (error) => console.log(error),
+      () => this.handleCompletion(uploadTask)
+    );
+  }
+
+  handleSnapshot(snapshot: UploadTaskSnapshot) {
+    let prog = Math.round(
+      (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    );
+    console.log('🚀 ~ EditComponent ~ handleSnapshot ~ prog:', prog);
+    this.progress.set(prog);
+    this.cdr.detectChanges();
+  }
+
+  handleCompletion(uploadTask: UploadTask) {
+    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      this.timeline.image = downloadURL;
+    });
   }
 
   onDelete() {
@@ -281,6 +348,7 @@ export class EditComponent implements OnInit {
     };
 
     reader.readAsDataURL(file);
+    this.uploadFile();
   }
 
   removeFile() {
@@ -294,6 +362,7 @@ export class EditComponent implements OnInit {
 
     this.timeline.image = '';
     this.imageSrc = '';
+    this.oldImage = '';
   }
 
   removeFileFromStorage(fileName: string) {
