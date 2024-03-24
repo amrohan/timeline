@@ -18,7 +18,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
   ],
   template: `
     <div class="h-20 flex items-center justify-between">
-      <h1 class="text-[#f0f7ee] p-0 m-0">Our Timeline</h1>
+      <h1 class="text-[#f0f7ee] p-0 m-0">Timeline</h1>
       <a routerLink="/add" class="rounded-md bg-zinc-900 p-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -133,7 +133,7 @@ import { FirebaseTimestampPipe } from './pipe/firebaseTimestamp.pipe';
     }
   `,
 })
-export class TweetComponent implements OnInit {
+export class TimelineComponent implements OnInit {
   public db = inject(DbService);
 
   // on image click make it full
