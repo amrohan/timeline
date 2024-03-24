@@ -255,7 +255,7 @@ export class AddComponent {
   }
 
   getStorageRef(fileName: string) {
-    return ref(this.storage, fileName.trim());
+    return ref(this.storage, fileName);
   }
 
   createUploadTask(storageRef: StorageReference, fileData: File) {

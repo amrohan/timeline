@@ -26,6 +26,7 @@ import {
 } from '@angular/fire/storage';
 import { FullscreenComponent } from './fullscreen.component';
 import { generateUniqueFilename } from '../helpers/generateFilename';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-edit',
@@ -242,6 +243,7 @@ export class EditComponent implements OnInit {
   private readonly storage: Storage = inject(Storage);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastrService);
 
   private readonly route = inject(ActivatedRoute);
 
@@ -276,9 +278,12 @@ export class EditComponent implements OnInit {
     this.db
       .updateTimeline(this.route.snapshot.params['id'], this.timeline)
       .subscribe({
-        next: (res) => {},
+        next: (res) => {
+          this.toast.success('Timeline updated successfully');
+          this.router.navigateByUrl('/');
+        },
         error: (err) => {
-          return {};
+          this.toast.error('Unable to update timeline');
         },
       });
   }
@@ -332,8 +337,13 @@ export class EditComponent implements OnInit {
     }
 
     this.db.deleteTimeline(this.route.snapshot.params['id']).subscribe({
-      next: (res) => {},
-      error: (err) => {},
+      next: (res) => {
+        this.toast.success('Item deleted');
+        this.router.navigateByUrl('/');
+      },
+      error: (err) => {
+        this.toast.error(err.message, 'Error');
+      },
     });
   }
 
@@ -366,9 +376,13 @@ export class EditComponent implements OnInit {
 
   removeFileFromStorage(fileName: string) {
     const storageRef = ref(this.storage, fileName);
-    deleteObject(storageRef).then(() => {
-      this.oldImage = '';
-    });
+    deleteObject(storageRef)
+      .then(() => {
+        this.oldImage = '';
+      })
+      .catch((err) => {
+        this.toast.error(err.message, 'Error');
+      });
   }
 
   @HostListener('document:keydown.escape', ['$event'])

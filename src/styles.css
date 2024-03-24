@@ -17,7 +17,7 @@ body {
   transform: translate(-50%, -50%);
 }
 .toast-top-center {
-  top: 0;
+  top: 10px;
   right: 0;
   width: 100%;
 }
