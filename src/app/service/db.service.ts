@@ -11,9 +11,6 @@ import {
   orderBy,
   limit,
   startAfter,
-  startAt,
-  endAt,
-  endBefore,
   getDoc,
 } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytesResumable } from '@angular/fire/storage';
@@ -55,7 +52,7 @@ export class DbService {
       orderBy('date', 'desc'),
       // this method checks the date and gets the next tweet
       startAfter(timeLine.date),
-      limit(1)
+      limit(10)
     );
 
     return collectionData(queryFn, {

@@ -106,10 +106,6 @@ import { AuthService } from './service/auth.service';
               [alt]="item.title"
             />
           </div>
-          <!-- User info -->
-          <div>
-            <p class="text-xs text-gray-500">Rohan Salunkhe</p>
-          </div>
         </div>
         <!-- End Right Content -->
       </div>
@@ -171,7 +167,7 @@ export class TimelineComponent implements OnInit {
   // injections
 
   ngOnInit(): void {
-    this.db.getTimeline(1).subscribe((data) => {
+    this.db.getTimeline(10).subscribe((data) => {
       this.db.tweet.set(data);
     });
   }
