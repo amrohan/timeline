@@ -5,18 +5,15 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { fadeInOut } from '@animation';
 
 @Component({
   selector: 'app-fullscreen',
   standalone: true,
   imports: [],
-  animations: [fadeInOut],
 
   template: `
     <section
-      @fadeInOut
-      class="h-full w-full min-h-96 fixed inset-0 grid place-content-center z-20 px-2 backdrop-blur-sm bg-zinc-900/40"
+      class="h-full w-full min-h-96 fixed inset-0 grid place-content-center z-20 px-2 backdrop-blur-sm bg-zinc-900/40 animate-fade "
     >
       <img
         [src]="image"

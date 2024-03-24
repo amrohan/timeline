@@ -19,16 +19,13 @@ import { ToastrService } from 'ngx-toastr';
 import { generateUniqueFilename } from '@helpers';
 import { DbService } from '@service';
 import { FullscreenComponent } from './fullscreen.component';
-import { fadeInOut } from '@animation';
 
 @Component({
   selector: 'app-add',
   standalone: true,
   imports: [RouterLink, FormsModule, FullscreenComponent, NgStyle, NgClass],
-  animations: [fadeInOut],
   template: `
     <section
-      @fadeInOut
       class="h-full z-full z-10 fixed inset-0 backdrop-blur-sm bg-zinc-900/40"
     >
       <main class="h-full w-full flex justify-center items-center py-4 px-2 ">

@@ -5,7 +5,6 @@ import { tweet } from '@model';
 import { AuthService, DbService } from '@service';
 import { FirebaseTimestampPipe } from '@pipe';
 import { FullscreenComponent } from './components/fullscreen.component';
-import { fadeInOut } from './animation/fadeInOut';
 import { TimeLineCardComponent } from './components/timeLineCard.component';
 
 @Component({
@@ -19,7 +18,6 @@ import { TimeLineCardComponent } from './components/timeLineCard.component';
     FirebaseTimestampPipe,
     TimeLineCardComponent,
   ],
-  animations: [fadeInOut],
   template: `
     <section class="animate-fade animate-ease-in-out">
       <div class="h-20 flex items-center justify-between">
