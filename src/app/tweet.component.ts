@@ -156,9 +156,7 @@ export class TweetComponent implements OnInit {
       next: (res) => {
         this.db.tweet.set([...this.db.tweet(), ...res]);
       },
-      error: (err) => {
-        console.log('🚀 ~ TweetComponent ~ this.db.loadMore ~ err:', err);
-      },
+      error: (err) => {},
     });
   }
 

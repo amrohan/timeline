@@ -258,12 +258,8 @@ export class EditComponent implements OnInit {
             'en-US'
           );
         }
-
-        console.log('🚀 ~ EditComponent ~ this.db.getTimeLineById ~ res:', res);
       },
-      error(err) {
-        console.log('🚀 ~ EditComponent ~ this.db.getTimeLineById ~ err:', err);
-      },
+      error(err) {},
     });
   }
 
@@ -279,17 +275,8 @@ export class EditComponent implements OnInit {
     this.db
       .updateTimeline(this.route.snapshot.params['id'], this.timeline)
       .subscribe({
-        next: (res) => {
-          console.log(
-            '🚀 ~ EditComponent ~ this.db.updateTimeline ~ res:',
-            res
-          );
-        },
+        next: (res) => {},
         error: (err) => {
-          console.log(
-            '🚀 ~ EditComponent ~ this.db.updateTimeline ~ err:',
-            err
-          );
           return {};
         },
       });
@@ -325,7 +312,6 @@ export class EditComponent implements OnInit {
     let prog = Math.round(
       (snapshot.bytesTransferred / snapshot.totalBytes) * 100
     );
-    console.log('🚀 ~ EditComponent ~ handleSnapshot ~ prog:', prog);
     this.progress.set(prog);
     this.cdr.detectChanges();
   }
@@ -344,12 +330,8 @@ export class EditComponent implements OnInit {
     }
 
     this.db.deleteTimeline(this.route.snapshot.params['id']).subscribe({
-      next: (res) => {
-        console.log('🚀 ~ EditComponent ~ this.db.deleteTimeline ~ res:', res);
-      },
-      error: (err) => {
-        console.log('🚀 ~ EditComponent ~ this.db.deleteTimeline ~ err:', err);
-      },
+      next: (res) => {},
+      error: (err) => {},
     });
   }
 
@@ -383,7 +365,6 @@ export class EditComponent implements OnInit {
   removeFileFromStorage(fileName: string) {
     const storageRef = ref(this.storage, fileName);
     deleteObject(storageRef).then(() => {
-      console.log('🚀 ~ EditComponent ~ removeFileFromStorage ~ Deleted');
       this.oldImage = '';
     });
   }

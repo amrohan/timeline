@@ -303,8 +303,6 @@ export class AddComponent {
 
   removeFileFromStorage(fileName: string) {
     const storageRef = ref(this.storage, fileName);
-    deleteObject(storageRef).then(() => {
-      console.log('🚀 ~ EditComponent ~ removeFileFromStorage ~ Deleted');
-    });
+    deleteObject(storageRef).then(() => {});
   }
 }
