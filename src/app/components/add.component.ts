@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FullscreenComponent } from './fullscreen.component';
 import { tweet } from '@model';
@@ -16,7 +16,9 @@ import {
 } from '@angular/fire/storage';
 import { DbService } from '../service/db.service';
 import { NgStyle, NgClass } from '@angular/common';
-import { AuthService } from '../service/auth.service';
+// import { AuthService } from '../service/auth.service';
+import { ToastrService } from 'ngx-toastr';
+import { generateUniqueFilename } from '../helpers/generateFilename';
 
 @Component({
   selector: 'app-add',
@@ -227,24 +229,33 @@ export class AddComponent {
 
   private readonly storage: Storage = inject(Storage);
   private readonly dbService = inject(DbService);
-  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  // private readonly authService = inject(AuthService);
+  private readonly toast = inject(ToastrService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   onAdd() {
-    this.dbService.addTimeLine(this.timeline).subscribe((res) => {
-      console.log(res);
+    this.dbService.addTimeLine(this.timeline).subscribe({
+      next: (res) => {
+        this.toast.success('Timeline added successfully');
+        this.router.navigateByUrl('/');
+      },
+      error: (res) => {
+        this.toast.error(res.message, 'Error');
+      },
     });
   }
 
   uploadFile() {
-    const storageRef = this.getStorageRef(this.fileData.name);
+    const fileName = generateUniqueFilename();
+    const storageRef = this.getStorageRef(fileName);
     const uploadTask = this.createUploadTask(storageRef, this.fileData);
 
     this.handleUploadState(uploadTask);
   }
 
   getStorageRef(fileName: string) {
-    return ref(this.storage, fileName);
+    return ref(this.storage, fileName.trim());
   }
 
   createUploadTask(storageRef: StorageReference, fileData: File) {

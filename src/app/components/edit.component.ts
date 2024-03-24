@@ -25,6 +25,7 @@ import {
   UploadTaskSnapshot,
 } from '@angular/fire/storage';
 import { FullscreenComponent } from './fullscreen.component';
+import { generateUniqueFilename } from '../helpers/generateFilename';
 
 @Component({
   selector: 'app-edit',
@@ -283,7 +284,8 @@ export class EditComponent implements OnInit {
   }
 
   uploadFile() {
-    const storageRef = this.getStorageRef(this.fileData.name);
+    const fileName = generateUniqueFilename();
+    const storageRef = this.getStorageRef(fileName);
     const uploadTask = this.createUploadTask(storageRef, this.fileData);
 
     this.handleUploadState(uploadTask);
