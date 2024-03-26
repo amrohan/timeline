@@ -40,9 +40,9 @@ import { FullscreenComponent } from './fullscreen.component';
         <div
           class="bg-black !text-slate-100 max-w-4xl w-full h-fit p-4 rounded-md border border-zinc-800 animate-fade-up animate-ease-in-out"
         >
-          <div class="flex justify-between items-center gap-2 h-10">
-            <h1 class="text-2xl font-semibold ">Update Timeline</h1>
-            <a routerLink="/" class="rounded-lg bg-zinc-900 p-2">
+          <div class="flex justify-between items-center gap-2 ">
+            <h2 class="m-0">Update Timeline</h2>
+            <a routerLink="/" class="rounded-lg bg-zinc-900 p-1.5 m-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
