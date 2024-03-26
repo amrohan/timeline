@@ -83,7 +83,7 @@ FIREBASE_APP_ID=YOUR_APP_ID
 
 Then you need to enable the Firestore and Storage rules to allow read and write access to the database and storage.
 
-```json
+```text
     rules_version = '2';
     service cloud.firestore {
       match /databases/{database}/documents {
@@ -96,7 +96,7 @@ Then you need to enable the Firestore and Storage rules to allow read and write 
 
 For the Storage rules:
 
-```json
+```text
     rules_version = '2';
     service firebase.storage {
       match /b/{bucket}/o {
