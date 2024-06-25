@@ -3,6 +3,7 @@ import {
   Auth,
   GoogleAuthProvider,
   authState,
+  signInWithPopup,
   signInWithRedirect,
 } from '@angular/fire/auth';
 
@@ -15,7 +16,7 @@ export class AuthService {
   provider = new GoogleAuthProvider();
 
   signInWithProvider() {
-    signInWithRedirect(this.auth, this.provider)
+    signInWithPopup(this.auth, this.provider)
       .then((u) => {
         console.log(u);
       })
